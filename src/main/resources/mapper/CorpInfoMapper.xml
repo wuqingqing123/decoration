@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zx.decoration.mapper.CorpInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zx.decoration.entity.CorpInfo">
+        <id column="corp_id" property="corpId" />
+        <result column="corp_name" property="corpName" />
+        <result column="user_id" property="userId" />
+        <result column="remark" property="remark" />
+        <result column="emp_num" property="empNum" />
+        <result column="state" property="state" />
+        <result column="example" property="example" />
+        <result column="decoration_num" property="decorationNum" />
+        <result column="favorable_rating" property="favorableRating" />
+        <result column="picture_path" property="picturePath" />
+        <result column="establish_time" property="establish_time" />
+        <result column="type" property="type"/>
+        <association property="users" column="user_id" javaType="Users"  >
+            <id column="users_ID" property="usersId" />
+            <result column="user_CODE" property="userCode" />
+            <result column="user_NAME" property="userName" />
+            <result column="IDENTITY_TYPE" property="identityType" />
+            <result column="SECOND_IDENTITY_TYPE" property="secondIdentityType" />
+            <result column="IDENTITY_STATE" property="identityState" />
+            <result column="PHONE_NUM" property="phoneNum" />
+            <result column="EMAIL" property="email" />
+            <result column="SEX" property="sex" />
+            <result column="ID_NUMBER" property="idNumber" />
+            <result column="PICTURE_URL" property="pictureUrl" />
+            <result column="CREATE_DATE" property="createDate" />
+            <result column="TS" property="ts" />
+        </association>
+    </resultMap>
+
+    <insert id="saveCorpInfo" parameterType="corpInfo" >
+        insert into  corp_info (corp_id,corp_name,user_id,state,type) values(uuid(),#{corpName},#{userId},0,'01');
+    </insert>
+
+<!--    修改公司名-->
+    <update id="updateCorpName">
+        update  corp_info set corp_name=#{corpName} where user_id=#{userId}
+    </update>
+
+<!--    修改公司备注-->
+    <update id="updateCorpRemark">
+        update corp_info set remark=#{remark} where user_id=#{userId}
+    </update>
+
+    <!--    修改公司成立时间-->
+    <update id="updateCorpEstablish">
+        update corp_info set establish_time=#{establishTime} where user_id=#{userId}
+    </update>
+
+    <!--    修改公司案例数-->
+    <update id="updateCorpExample">
+        update  corp_info set example=#{example} where user_id=#{userId}
+    </update>
+
+<!--    根据用户id查询公司信息-->
+    <select id="queryCorpInfo" resultMap="BaseResultMap" parameterType="String">
+        select * from corp_info ci join users u on ci.user_id=u.users_id
+        <where>
+            ci.user_id=#{userId}
+        </where>
+    </select>
+
+    <!--    修改公司图片-->
+    <update id="updatePicturePath">
+        update  corp_info set picture_path=#{picturePath} where user_id=#{userId}
+    </update>
+
+<!--    分页查询所有公司-->
+    <select id="queryAllCorp" resultMap="BaseResultMap" >
+        select * from corp_info ci join users u on ci.user_id=u.users_id
+        join user_type ut on ci.type=ut.ccode
+         <where>
+             ci.state=1
+             <if test="corpInfo.corpName!=null">
+                 and corp_name like '%${corpInfo.corpName}%'
+             </if>
+         </where>
+         
+         order by u.ts limit #{currentPage},#{perPage}
+    </select>
+
+<!--    查询公司总数-->
+    <select id="queryCorpCount"  resultType="Integer" >
+        select count(*) from corp_info ci join users u on ci.user_id=u.users_id
+        <where>
+            ci.state=1
+            <if test="corpName!=null">
+                and corp_name like '%${corpName}%'
+            </if>
+        </where>
+         order by u.ts
+    </select>
+
+<!--    修改公司状态-->
+    <update id="updateCorpState">
+        update  corp_info set state=#{state} where user_id=#{userId}
+    </update>
+
+    <!--    修改公司员工数-->
+    <update id="updateCorpEmpNum">
+        update  corp_info set emp_num=#{empNum} where user_id=#{userId}
+    </update>
+</mapper>

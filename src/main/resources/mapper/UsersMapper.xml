@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zx.decoration.mapper.UsersMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zx.decoration.entity.Users">
+        <id column="users_ID" property="usersId" />
+        <result column="user_CODE" property="userCode" />
+        <result column="user_NAME" property="userName" />
+        <result column="IDENTITY_TYPE" property="identityType" />
+        <result column="SECOND_IDENTITY_TYPE" property="secondIdentityType" />
+        <result column="IDENTITY_STATE" property="identityState" />
+        <result column="PHONE_NUM" property="phoneNum" />
+        <result column="EMAIL" property="email" />
+        <result column="SEX" property="sex" />
+        <result column="ID_NUMBER" property="idNumber" />
+        <result column="PICTURE_URL" property="pictureUrl" />
+        <result column="CREATE_DATE" property="createDate" />
+        <result column="TS" property="ts" />
+
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap" resultType="Users">
+        select * from users
+        <where>
+            users_ID='${userId}'
+        </where>
+    </select>
+
+    <insert id="saveUser" parameterType="users">
+        insert into users  values(#{usersId},"12",#{userName},#{identityType},#{secondIdentityType},0,#{phoneNum},#{email},#{sex},"","",now(),now())
+    </insert>
+
+    <!--修改用户名-->
+    <update id="updateUserName">
+        update  users set user_name=#{userName} where users_id=#{userId}
+    </update>
+
+    <!--修改邮箱-->
+    <update id="updateUserEmail">
+        update users set email=#{email} where users_id=#{usersId}
+    </update>
+
+    <!--修改手机号-->
+    <update id="updateUserPhone">
+        update users set phone_num=#{phoneNum} where users_id=#{usersId}
+    </update>
+
+    <!--    修改用户图片-->
+    <update id="updatePicturePath">
+        update  users set picture_url=#{picturePath} where users_id=#{userId}
+    </update>
+
+</mapper>

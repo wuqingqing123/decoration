@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zx.decoration.mapper.UserAccountMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zx.decoration.entity.UserAccount">
+        <id column="account_id" property="accountId" />
+        <result column="account_name" property="accountName" />
+        <result column="user_id" property="userId" />
+        <result column="account_password" property="accountPassword" />
+        <result column="state" property="state" />
+        <result column="ts" property="ts" />
+        <result column="online" property="online" />
+        <association property="users" column="user_id" javaType="Users"  >
+            <id column="users_ID" property="usersId" />
+            <result column="user_CODE" property="userCode" />
+            <result column="user_NAME" property="userName" />
+            <result column="IDENTITY_TYPE" property="identityType" />
+            <result column="SECOND_IDENTITY_TYPE" property="secondIdentityType" />
+            <result column="IDENTITY_STATE" property="identityState" />
+            <result column="PHONE_NUM" property="phoneNum" />
+            <result column="EMAIL" property="email" />
+            <result column="SEX" property="sex" />
+            <result column="ID_NUMBER" property="idNumber" />
+            <result column="PICTURE_URL" property="pictureUrl" />
+            <result column="CREATE_DATE" property="createDate" />
+            <result column="TS" property="ts" />
+        </association>
+    </resultMap>
+
+    <select id="selectUser" resultType="users">
+        select * from users where users_id='${userId}'
+    </select>
+
+    <select id="queryUserAccount" resultMap="BaseResultMap" resultType="UserAccount">
+        select * from user_account ua join users u on u.users_ID=ua.user_id
+        <where>
+            ua.account_name='${username} 'and ua.account_password='${password}'
+        </where>
+    </select>
+
+<!--    根据修改在线状态-->
+    <update id="updateOnline" >
+        update user_account set online=#{online}
+        <where>
+            account_name=#{accountName}
+        </where>
+    </update>
+
+    <select id="selectUserAccountById" resultMap="BaseResultMap" resultType="UserAccount">
+        select * from user_account
+        <where>
+            accountId='${accountId}'
+        </where>
+    </select>
+
+<!--    保存账号信息-->
+    <insert id="saveUserAccount" parameterType="userAccount"  >
+        insert into user_account values (#{userId},#{accountName},#{userId},#{accountPassword},0,now(),0)
+    </insert>
+
+    <select id="selectUserAccountByName" parameterType="String" resultMap="BaseResultMap">
+        select * from user_account
+        <where>
+            account_name=#{accountName}
+        </where>
+    </select>
+
+<!--    更新密码-->
+    <update id="resetpassword" parameterType="userAccount">
+        update user_account set account_password=#{accountPassword}
+        <where>
+            account_name=#{accountName}
+        </where>
+    </update>
+</mapper>

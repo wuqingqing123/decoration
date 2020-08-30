@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zx.decoration.mapper.OrderInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zx.decoration.entity.OrderInfo">
+        <id column="order_id" property="orderId" />
+        <result column="order_code" property="orderCode" />
+        <result column="user_id" property="userId" />
+        <result column="receiver_id" property="receiverId" />
+        <result column="state" property="state" />
+        <result column="receiver_type" property="receiverType" />
+        <result column="house_area" property="houseArea" />
+        <result column="budget" property="budget" />
+        <result column="pay" property="pay" />
+        <result column="remark" property="remark" />
+        <result column="picture_path" property="picturePath" />
+        <result column="create_time" property="createTime"/>
+<!--        <association property="user" column="user_id" javaType="Users">-->
+<!--            <id column="users_ID" property="usersId" />-->
+<!--            <result column="user_CODE" property="userCode" />-->
+<!--            <result column="user_NAME" property="userName" />-->
+<!--        </association>-->
+<!--        <association property="receiver" column="receiver_id" javaType="Users">-->
+<!--            <id column="receivers_ID" property="usersId" />-->
+<!--            <result column="receivers_CODE" property="userCode" />-->
+<!--            <result column="receivers_NAME" property="userName" />-->
+<!--        </association>-->
+        <result column="userName" property="userName"/>
+        <result column="receiverName" property="receiverName"/>
+        <association property="userType" column="receiver_type" javaType="userType">
+            <id column="user_type_id" property="userTypeId" />
+            <result column="fcode" property="fcode" />
+            <result column="ccode" property="ccode" />
+            <result column="cname" property="cname" />
+            <result column="state" property="state" />
+            <result column="create_time" property="createTime" />
+            <result column="ts" property="ts" />
+        </association>
+    </resultMap>
+
+<!--    保存订单-->
+    <insert id="saveOrder" parameterType="orderInfo">
+        insert into order_info values(#{orderId},#{orderCode},#{userId},#{receiverId},0,#{receiverType},#{houseArea},#{budget},#{pay},#{remark},"",now());
+    </insert>
+
+<!--    查询所有未接收订单-->
+    <select id="queryOrderInfo" resultMap="BaseResultMap" >
+        select oi.*,u1.user_NAME as userName,ifnull(u2.user_NAME,"") as receiverName ,ut.*
+                                    from order_info oi join users u1 on oi.user_id=u1.users_id
+                                    left join users u2 on oi.receiver_id=u2.users_id
+                                    left join user_type ut on oi.receiver_type=ut.ccode
+        <where>
+            oi.state=0
+            and receiver_id is null
+        </where>
+    </select>
+
+<!--    接受订单-->
+    <update id="updateOrder" parameterType="orderInfo">
+        update order_info set receiver_id=#{receiverId},receiver_type=#{receiverType},state=1
+        <where>
+            order_id=#{orderId}
+        </where>
+    </update>
+
+<!--    修改订单状态-->
+    <update id="updateOrderState" >
+        update  order_info set state=#{state} where order_id=#{orderId}
+    </update>
+
+<!--    查看装修方订单-->
+    <select id="queryDecorationOrder" resultMap="BaseResultMap" >
+        select oi.*,u1.user_NAME as userName,u2.user_NAME as receiverName ,ut.*
+        from order_info oi join users u1 on oi.user_id=u1.users_id
+        left join users u2 on oi.receiver_id=u2.users_id
+        left join user_type ut on oi.receiver_type=ut.ccode
+        <where>
+            oi.receiver_id=#{usersId}
+        </where>
+    </select>
+
+    <!--    查看业主订单-->
+    <select id="queryUserOrder" resultMap="BaseResultMap" >
+        select oi.*,u1.user_NAME as userName,ifnull(u2.user_NAME,"") as receiverName ,ut.*
+        from order_info oi join users u1 on oi.user_id=u1.users_id
+        left join users u2 on oi.receiver_id=u2.users_id
+        left join user_type ut on oi.receiver_type=ut.ccode
+        <where>
+            oi.user_id=#{usersId}
+        </where>
+    </select>
+
+<!--    根据订单id查询订单-->
+    <select id="queryOrderInfoById" resultMap="BaseResultMap" parameterType="String">
+        select* from order_info
+        <where>
+            order_id=#{orderId}
+        </where>
+    </select>
+</mapper>

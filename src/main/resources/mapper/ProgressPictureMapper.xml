@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zx.decoration.mapper.ProgressPictureMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zx.decoration.entity.ProgressPicture">
+        <id column="progress_picture_id" property="progressPictureId" />
+        <result column="picture_path" property="picturePath" />
+        <result column="remark" property="remark" />
+        <result column="progress_id" property="progressId" />
+    </resultMap>
+
+    <select id="queryAllPicture" resultMap="BaseResultMap" parameterType="String">
+        select * from progress_picture
+        <where>
+            progress_id=#{progress_id}
+        </where>
+    </select>
+
+<!--    插入照片记录-->
+    <insert id="saveprogressPicture" parameterType="progressPicture">
+        insert into progress_picture values (uuid(),#{picturePath},#{remark},#{progressId})
+    </insert>
+
+</mapper>

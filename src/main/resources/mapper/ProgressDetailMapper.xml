@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zx.decoration.mapper.ProgressDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zx.decoration.entity.ProgressDetail">
+        <id column="progress_id" property="progressId" />
+        <result column="order_id" property="orderId" />
+        <result column="receiver_id" property="receiverId" />
+        <result column="state" property="state" />
+        <result column="state_name" property="stateName" />
+        <result column="operate_time" property="operateTime" />
+        <result column="picture_path" property="picturePath" />
+        <result column="remark" property="remark" />
+        <collection property="progressPictures" ofType="progressPicture">
+            <id column="progress_picture_id" property="progressPictureId" />
+            <result column="picture_path" property="picturePath" />
+            <result column="remark" property="remark" />
+            <result column="progress_id" property="progressId" />
+        </collection>
+    </resultMap>
+
+<!--    分页查询进度-->
+    <select id="queryAllProgress" resultMap="BaseResultMap" parameterType="progressDetail">
+        select * from progress_detail pd
+        <where>
+            pd.order_id=#{orderId}
+        </where>
+        order by pd.operate_time limit #{currentPage},#{perPage};
+    </select>
+
+<!--    查询当前订单下进度总数-->
+    <select id="queryProgressCount" resultType="Integer" parameterType="String">
+        select count(*) from progress_detail
+        <where>
+            order_id=#{orderId}
+        </where>
+    </select>
+
+<!--    插入一条进度记录-->
+    <insert id="insertProgress" parameterType="progressDetail">
+        insert into progress_detail(progress_id,order_id,receiver_id,state,state_name,operate_time) values (uuid(),#{orderId},#{receiverId},#{state},#{stateName},now())
+    </insert>
+
+<!--    更新进度的接受者-->
+    <update id="updateProgressReceiver" parameterType="progressDetail">
+        update progress_detail set receiver_id=#{receiverId} where order_id=#{orderId} and state=#{state}
+    </update>
+
+</mapper>

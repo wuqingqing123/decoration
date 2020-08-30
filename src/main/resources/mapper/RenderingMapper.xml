@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zx.decoration.mapper.RenderingMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zx.decoration.entity.Rendering">
+        <id column="rendering_id" property="renderingId" />
+        <result column="rendering_name" property="renderingName" />
+        <result column="remark" property="remark" />
+    </resultMap>
+
+<!--    查询所有效果图-->
+    <select id="selectAllRendering" resultMap="BaseResultMap">
+        select * from rendering
+    </select>
+
+</mapper>

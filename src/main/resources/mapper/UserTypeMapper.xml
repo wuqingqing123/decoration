@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zx.decoration.mapper.UserTypeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zx.decoration.entity.UserType">
+        <id column="user_type_id" property="userTypeId" />
+        <result column="fcode" property="fcode" />
+        <result column="ccode" property="ccode" />
+        <result column="cname" property="cname" />
+        <result column="state" property="state" />
+        <result column="create_time" property="createTime" />
+        <result column="ts" property="ts" />
+    </resultMap>
+
+<!--    查询所有装修工人身份-->
+    <select id="queryAllType" resultMap="BaseResultMap">
+        select * from user_type where fcode=1
+    </select>
+
+<!--    查询业主和装修工人身份-->
+    <select id="queryAllTypes" resultMap="BaseResultMap">
+        select * from user_type where fcode in (1,2);
+    </select>
+
+    <!--    查询所有装修方身份-->
+    <select id="queryAllTypeD" resultMap="BaseResultMap">
+        select * from user_type where fcode in (0,1);
+    </select>
+
+<!--    查询所有身份-->
+    <select id="queryTypes" resultMap="BaseResultMap">
+        select * from user_type ;
+    </select>
+
+</mapper>

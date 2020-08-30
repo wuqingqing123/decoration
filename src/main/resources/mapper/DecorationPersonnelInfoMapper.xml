@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zx.decoration.mapper.DecorationPersonnelInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zx.decoration.entity.DecorationPersonnelInfo">
+        <id column="personnel_id" property="personnelId" />
+        <result column="personnel_name" property="personnelName" />
+        <result column="user_id" property="userId" />
+        <result column="type" property="type" />
+        <result column="example_num" property="exampleNum" />
+        <result column="work_time" property="workTime" />
+        <result column="remark" property="remark" />
+        <result column="state" property="state"   />
+        <result column="favorable_rating" property="favorableRating" />
+        <result column="PICTURE_Path" property="picturePath" />
+        <association property="users" column="user_id" javaType="Users"  >
+            <id column="users_ID" property="usersId" />
+            <result column="user_CODE" property="userCode" />
+            <result column="user_NAME" property="userName" />
+            <result column="IDENTITY_TYPE" property="identityType" />
+            <result column="SECOND_IDENTITY_TYPE" property="secondIdentityType" />
+            <result column="IDENTITY_STATE" property="identityState" />
+            <result column="PHONE_NUM" property="phoneNum" />
+            <result column="EMAIL" property="email" />
+            <result column="SEX" property="sex" />
+            <result column="ID_NUMBER" property="idNumber" />
+            <result column="PICTURE_URL" property="pictureUrl" />
+            <result column="CREATE_DATE" property="createDate" />
+            <result column="TS" property="ts" />
+        </association>
+        <association property="userType" column="ype" javaType="userType">
+            <id column="user_type_id" property="userTypeId" />
+            <result column="fcode" property="fcode" />
+            <result column="ccode" property="ccode" />
+            <result column="cname" property="cname" />
+            <result column="state" property="state" />
+            <result column="create_time" property="createTime" />
+            <result column="ts" property="ts" />
+        </association>
+    </resultMap>
+
+    <select id="selectUser" resultType="users">
+        select * from users where users_id='${userId}'
+    </select>
+
+    <select id="queryDecorationPersonnel" resultMap="BaseResultMap" resultType="DecorationPersonnelInfo">
+        select * from decoration_personnel_info dpi join users on users.users_id=dpi.user_id
+        join user_type ut on dpi.type=ut.ccode
+        where dpi.user_ID='${userId}'
+    </select>
+
+    <update id="updatePersonnelName"  >
+        update decoration_personnel_info set personnel_name=#{personnelName} where user_id=#{userId}
+    </update>
+
+    <update id="updatePersonnelType">
+        update decoration_personnel_info set type=#{type} where user_id=#{userId}
+    </update>
+
+    <update id="updateUserWork">
+        update decoration_personnel_info set work_time=#{workTime} where user_id=#{userId}
+    </update>
+
+    <update id="updatePersonnelExample">
+        update decoration_personnel_info set example_num=#{example} where user_id=#{userId}
+    </update>
+
+    <update id="updatePersonnelRemark">
+        update decoration_personnel_info set remark=#{remark} where user_id=#{userId}
+    </update>
+
+<!--    保存装修工人信息-->
+    <insert id="savePersonnel" parameterType="decorationPersonnelInfo">
+        insert into decoration_personnel_info(personnel_id,user_id,type,personnel_name,state)values(uuid(),#{userId},#{type},#{personnelName},0)
+    </insert>
+
+    <!--    修改工人图片-->
+    <update id="updatePicturePath">
+        update  decoration_personnel_info set picture_path=#{picturePath} where user_id=#{userId}
+    </update>
+
+    <!--    修改工人状态-->
+    <update id="updatePersonnelState">
+        update  decoration_personnel_info set state=#{state} where user_id=#{userId}
+    </update>
+
+    <!--    分页查询所有工人-->
+    <select id="queryAllPersonnel" resultMap="BaseResultMap" >
+        select * from decoration_personnel_info dpi join users u on dpi.user_id=u.users_id
+        join user_type ut on dpi.type=ut.ccode
+        <where>
+            dpi.state=1
+            <if test="personnelInfo.personnelName!=null">
+                and personnel_name like '%${personnelInfo.personnelName}%'
+            </if>
+            <if test="personnelInfo.type!=null and personnelInfo.type!= ''">
+                and type=#{personnelInfo.type}
+            </if>
+        </where>
+         order by u.ts limit #{currentPage},#{perPage}
+    </select>
+
+    <!--    查询工人总数-->
+    <select id="queryPersonnelCount"  resultType="Integer">
+        select count(*) from decoration_personnel_info dpi join users u on dpi.user_id=u.users_id
+        <where>
+            dpi.state=1
+            <if test="personnelName!=null">
+                and personnel_name like '%${personnelName}%'
+            </if>
+            <if test="type!=null and type!= ''">
+                and type=#{type}
+            </if>
+        </where>
+        order by u.ts
+    </select>
+
+
+</mapper>
